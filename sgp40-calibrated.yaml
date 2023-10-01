@@ -1,11 +1,15 @@
 esphome:
   name: sgp40-dht22
+  comment: Temperatrue and humidity compensated SGP40 sensor
+  friendly_name: sgp40-dht22
 
 esp8266:
   board: nodemcuv2
 
 # Enable logging
 logger:
+  level: DEBUG
+  # level: INFO
 
 # Enable Home Assistant API
 api:
@@ -37,15 +41,28 @@ sensor:
     temperature:
       name: "SGP40_Temperature"
       id: dht_temp
+    accuracy_decimals: 2
+    filters:
+      - heartbeat: 1.0s # This helps sensors to trigger correctly to updates
+
     humidity:
       name: "SGP40_Humidity"
       id: dht_humidity
     update_interval: 30s
+    accuracy_decimals: 2
+    filters:
+      - heartbeat: 1.0s # This helps sensors to trigger correctly to updates
 
-  - platform: sgp40
+  - platform: sgp4x # This is the new naming for the sensor
     name: "SGP40 VOC"
-    update_interval: 30s
+    id: air_quality_sensor
+    i2c_id: bus_a # Set I2C bus
+    address: 0x59 # Set the address for readability and debugging pruposes
+    voc:
+      name: "VOC Index"
+      id: voc_index
     compensation:
       humidity_source: dht_humidity
       temperature_source: dht_temp
+    update_interval: 30s
       
